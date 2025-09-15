@@ -1,19 +1,26 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
-# 사용자명과 비밀번호를 실제 값으로 변경하세요.
 import os
+from dotenv import load_dotenv
 
-DB_HOST = os.getenv("DB_HOST", "localhost")
+load_dotenv()  # .env 파일 자동 로드
+
+DB_HOST = os.getenv("MYSQL_HOST", "localhost")
+DB_USER = os.getenv("MYSQL_USER", "root")
+DB_PASSWORD = os.getenv("MYSQL_PASSWORD", "1234")
+DB_NAME = os.getenv("MYSQL_DATABASE", "my_login_db")
+DB_PORT = os.getenv("MYSQL_PORT", "3306")
+
 SQLALCHEMY_DATABASE_URL = (
-    f"mysql+pymysql://root:1111@{DB_HOST}:3306/my_login_db"
+    f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 )
+
+print("[DEBUG] DB URL:", SQLALCHEMY_DATABASE_URL)  # 연결 정보 확인용
+
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-
 def get_db():
-    print("[DEBUG] get_db() called")
     db = SessionLocal()
     try:
         yield db
